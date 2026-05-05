@@ -13,7 +13,7 @@ import {
 import { wrapEmail } from "../utils/emailWrapper";
 import { applyEmailIssueFix, validateEmailHtml } from "../utils/emailHtmlValidator";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const STORAGE_KEY = "email-studio-builder-state";
 
 export default function Builder({ onBack }) {
@@ -216,7 +216,7 @@ export default function Builder({ onBack }) {
     pushToast("pending", "Sending your test email now...");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/send-test-emails`, {
+      const response = await fetch(`${API_BASE_URL}/api/send-test-emails`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipients: validRecipients, subject, html: htmlToSend, wrap }),
