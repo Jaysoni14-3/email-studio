@@ -1,0 +1,193 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #142033;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 28%),
+    linear-gradient(180deg, #fbfaf7 0%, #f4f1e8 100%);
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #142033;
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(32, 52, 92, 0.16);
+  color: #142033;
+}
+
+.font-display {
+  font-family: "Fraunces", Georgia, serif;
+  letter-spacing: -0.04em;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.98), transparent 26%),
+    radial-gradient(circle at 100% 10%, rgba(220, 226, 240, 0.55), transparent 24%),
+    linear-gradient(180deg, #fbfaf7 0%, #f5f2ea 100%);
+}
+
+@keyframes driftGradient {
+  0% {
+    background-position:
+      0% 0%,
+      100% 10%,
+      0% 0%;
+  }
+  50% {
+    background-position:
+      10% 8%,
+      88% 18%,
+      0% 0%;
+  }
+  100% {
+    background-position:
+      0% 0%,
+      100% 10%,
+      0% 0%;
+  }
+}
+
+.animated-light-bg {
+  animation: driftGradient 20s ease-in-out infinite;
+}
+
+.surface {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(20, 32, 51, 0.08);
+  box-shadow: 0 18px 60px rgba(20, 32, 51, 0.06);
+}
+
+.surface-muted {
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(20, 32, 51, 0.06);
+}
+
+/* Core layout fallback classes so builder remains usable even if utility CSS fails to load. */
+.builder-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.builder-workspace,
+.builder-panel {
+  width: 100%;
+}
+
+.builder-page {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.95), transparent 32%),
+    radial-gradient(circle at 100% 12%, rgba(220, 226, 240, 0.46), transparent 28%),
+    linear-gradient(180deg, #faf8f3 0%, #f4f0e7 100%);
+}
+
+@keyframes softEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micro-interactive {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.micro-interactive:hover {
+  transform: translateY(-1px);
+}
+
+.micro-interactive:active {
+  transform: translateY(0);
+}
+
+.soft-enter {
+  animation: softEnter 320ms ease both;
+}
+
+.surface-card {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+}
+
+.preview-fade {
+  animation: softEnter 350ms ease both;
+}
+
+.toast-item {
+  animation: softEnter 220ms ease both;
+}
+
+@media (min-width: 768px) {
+  .builder-layout {
+    flex-direction: row;
+  }
+
+  .builder-workspace {
+    width: 70%;
+    flex: 0 0 70%;
+  }
+
+  .builder-panel {
+    width: 30%;
+    flex: 0 0 30%;
+  }
+}
+
+.builder-panel::-webkit-scrollbar,
+.builder-workspace::-webkit-scrollbar {
+  width: 10px;
+}
+
+.builder-panel::-webkit-scrollbar-thumb,
+.builder-workspace::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .micro-interactive,
+  .surface-card,
+  .soft-enter,
+  .animated-light-bg,
+  .preview-fade {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
