@@ -122,7 +122,7 @@ const points = [
   "A premium interface designed for real product teams.",
 ];
 
-export default function Landing({ onStart,  }) {
+export default function Landing({ onStart }) {
   const [slideIndex, setSlideIndex] = useState(0);
   const activeSlide = previewSlides[slideIndex];
 
@@ -136,80 +136,77 @@ export default function Landing({ onStart,  }) {
 
   return (
     <div className="app-shell animated-light-bg min-h-screen text-slate-900">
-      <div className="mx-auto max-w-7xl px-6 py-6 md:px-10 md:py-8">
-        <header className="flex items-center justify-between rounded-full border border-slate-200/70 bg-white/72 px-5 py-4 backdrop-blur-xl">
-          <div className="flex items-center gap-4">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold tracking-[0.24em] text-white">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 md:px-10 md:py-8">
+        <header className="flex flex-col gap-4 rounded-[28px] border border-slate-200/70 bg-white/72 px-4 py-4 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:px-5">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold tracking-[0.24em] text-white sm:h-11 sm:w-11">
               M
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Email Studio</p>
-              <p className="text-sm text-slate-600">Email preview and test delivery</p>
+              <p className="text-sm leading-5 text-slate-600">Email preview and test delivery</p>
             </div>
           </div>
 
           <button
             onClick={onStart}
-            className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="hidden rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 sm:inline-flex"
           >
             Open App
           </button>
         </header>
 
-        <section className="grid gap-20 py-16 lg:grid-cols-[minmax(0,1fr)_560px] lg:items-center ">
+        <section className="grid gap-10 py-10 sm:gap-14 sm:py-12 lg:grid-cols-[minmax(0,1fr)_560px] lg:items-center lg:gap-16 lg:py-20">
           <div className="max-w-3xl">
             <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Production-Ready Email Workspace</p>
-            <h1 className="mt-6 max-w-4xl text-2xl leading-[0.92] text-slate-900 md:text-5xl">
-              <span className="font-display">Design clarity</span>
-              <span className="block">for teams that still</span>
-              <span className="block text-slate-500">ship in HTML.</span>
+            <h1 className="mt-4 max-w-[11ch] text-[2.2rem] leading-[1.02] tracking-[-0.03em] text-slate-900 sm:mt-6 sm:max-w-4xl sm:text-[2.8rem] sm:leading-[0.92] sm:tracking-normal md:text-5xl">
+              <span className="font-display block leading-[0.98] sm:leading-none">Design clarity</span>
+              <span className="block sm:inline">for teams that still </span>
+              <span className="block text-slate-500 sm:inline">ship in HTML.</span>
             </h1>
 
-            <p className="mt-8 max-w-2xl text-lg leading-9 text-slate-600 md:text-xl">
+            <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600 sm:mt-8 sm:text-lg sm:leading-9 md:text-xl">
               Email Studio gives email teams a calmer way to review campaigns: one place to write code, inspect the rendered result, and send polished test emails before anything goes live.
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-4">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-4">
               <button
                 onClick={onStart}
-                className="rounded-full bg-slate-900 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="w-full rounded-full bg-slate-900 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto"
               >
                 Launch Email Studio
               </button>
-              {/* <button onClick={onOpenVisualBuilder} className="rounded-full border border-slate-200 bg-white px-7 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"> */}
-                 {/* Open Visual Builder */}
-              {/* </button>  */}
             </div>
 
-            <div className="mt-14 grid gap-4 grid-cols-1">
+            <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4">
               {points.map((point) => (
-                <div key={point} className="flex flex-row items-center gap-4 rounded-[28px] border border-slate-200/70 bg-white/70 p-6">
-                  <div className="h-2.5 w-2.5 rounded-full bg-slate-900" />
-                  <p className=" text-sm leading-7 text-slate-600">{point}</p>
+                <div key={point} className="flex items-start gap-4 rounded-[24px] border border-slate-200/70 bg-white/70 p-4 sm:items-center sm:rounded-[28px] sm:p-6">
+                  <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-slate-900 sm:mt-0" />
+                  <p className="text-sm leading-6 text-slate-600 sm:leading-7">{point}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="surface overflow-hidden rounded-[36px] p-6">
-            <div className="mb-5 flex items-center justify-between">
+          <div className="surface overflow-hidden rounded-[28px] p-4 sm:rounded-[36px] sm:p-6">
+            <div className="mb-4 flex items-start justify-between gap-3 sm:mb-5 sm:items-center">
               <div className="flex gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
                 <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
               </div>
-              <div className="text-right">
+              <div className="min-w-0 text-right">
                 <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">{activeSlide.label}</p>
-                <p className="mt-1 text-xs text-slate-500">{activeSlide.note}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">{activeSlide.note}</p>
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white">
+            <div className="overflow-hidden rounded-[22px] border border-slate-200 bg-white sm:rounded-[28px]">
               <iframe
                 key={activeSlide.label}
                 title="sample-preview"
                 srcDoc={activeSlide.html}
-                className="preview-fade h-[620px] w-full border-0 bg-white"
+                className="preview-fade h-[420px] w-full border-0 bg-white sm:h-[520px] lg:h-[620px]"
               />
             </div>
           </div>

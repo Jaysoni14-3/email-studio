@@ -1,4 +1,4 @@
-import { statusStyles } from "./builderData";
+import { useState } from "react";
 
 export default function ControlPanel({
   subject,
@@ -7,41 +7,163 @@ export default function ControlPanel({
   setWrap,
   recipientInput,
   setRecipientInput,
+  onRecipientKeyDown,
   recipients,
+  savedRecipients,
   addRecipients,
   removeRecipient,
+  restoreSavedRecipient,
+  removeSavedRecipient,
   validRecipients,
   invalidRecipients,
   templates,
   applyTemplate,
-  status,
-  sendResults,
-  serverInfo,
-  isCheckingHealth,
   onSend,
   isSending,
-  canSend,
   validationResult,
 }) {
+  const [templatesOpen, setTemplatesOpen] = useState(true);
+  const [savedRecipientsOpen, setSavedRecipientsOpen] = useState(true);
+
   return (
-    <aside className="surface min-h-full rounded-[32px] bg-[#fcfbf8] md:rounded-[0_32px_32px_0]">
-      <div className="space-y-12 p-7 md:p-10">
+    <aside className="surface min-h-full rounded-[28px] bg-[#fcfbf8] md:rounded-[0_32px_32px_0]">
+      <div className="space-y-10 p-5 sm:p-6 md:space-y-12 md:p-10">
         <section className="soft-enter">
           <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Step 1</p>
-          <h2 className="mt-2 text-[1.75rem] leading-tight text-slate-900">
-            <span className="font-display">Basic email details</span>
+          <h2 className="mt-2 text-[1.45rem] leading-tight text-slate-900 sm:text-[1.75rem]">
+            <span className="font-display">Choose who gets the test</span>
           </h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">Set the email title and choose how it should be previewed.</p>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            Type an email, press Enter or tap Add, then send. Saved addresses can be reused any time.
+          </p>
 
-          <label className="mt-6 block">
-            <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Email subject</span>
-            <input
-              value={subject}
-              onChange={(event) => setSubject(event.target.value)}
-              placeholder="Example: New collection is live"
-              className="w-full rounded-[18px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-100"
-            />
-          </label>
+          <div className="mt-6 border-t border-slate-200 pt-6">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Recipients</p>
+            </div>
+
+            <label className="mt-4 block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Email subject</span>
+              <input
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+                placeholder="Example: New collection is live"
+                className="w-full rounded-[18px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-100"
+              />
+            </label>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <input
+                value={recipientInput}
+                onChange={(event) => setRecipientInput(event.target.value)}
+                onKeyDown={onRecipientKeyDown}
+                placeholder="Enter one or more emails"
+                className="w-full rounded-[18px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-100"
+              />
+              <button
+                type="button"
+                onClick={addRecipients}
+                className="micro-interactive rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:shrink-0"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="mt-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                Selected for this send
+              </p>
+
+              {recipients.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2.5">
+                  {recipients.map((email) => (
+                    <button
+                      type="button"
+                      key={email}
+                      onClick={() => removeRecipient(email)}
+                      className={`micro-interactive rounded-full px-3 py-1.5 text-sm ${
+                        validRecipients.includes(email) ? "bg-slate-100 text-slate-700" : "bg-amber-100 text-amber-800"
+                      }`}
+                    >
+                      {email} ×
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  No recipients selected yet.
+                </p>
+              )}
+            </div>
+
+            {savedRecipients.length > 0 ? (
+              <div className="mt-6 border-t border-slate-200 pt-6">
+                <button
+                  type="button"
+                  onClick={() => setSavedRecipientsOpen((current) => !current)}
+                  className="micro-interactive flex w-full items-center justify-between gap-3 text-left"
+                >
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+                      Saved for later
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">
+                      Reuse saved email addresses without typing them again.
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-500">
+                    {savedRecipientsOpen ? "Hide" : "Show"}
+                  </span>
+                </button>
+
+                {savedRecipientsOpen ? (
+                  <div className="mt-4 flex flex-wrap gap-2.5">
+                    {savedRecipients.map((email) => (
+                      <div
+                        key={`saved_${email}`}
+                        className="flex items-center overflow-hidden rounded-full border border-slate-200 bg-white"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => restoreSavedRecipient(email)}
+                          className="micro-interactive px-3 py-1.5 text-sm text-slate-700"
+                        >
+                          {email}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeSavedRecipient(email)}
+                          className="micro-interactive border-l border-slate-200 px-2.5 py-1.5 text-sm text-slate-400 hover:text-rose-600"
+                          aria-label={`Remove ${email} from saved recipients`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm leading-6 text-slate-500">
+                    Expand to see saved recipients.
+                  </p>
+                )}
+              </div>
+            ) : null}
+
+            {invalidRecipients.length > 0 ? (
+              <p className="mt-5 text-sm leading-6 text-amber-800">
+                A few addresses need fixing before sending.
+              </p>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            onClick={onSend}
+            disabled={isSending}
+            className="micro-interactive mt-6 w-full rounded-full bg-slate-900 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isSending ? "Sending test email..." : "Send test email now"}
+          </button>
 
           <label className="mt-5 flex items-start gap-3 rounded-[20px] bg-white px-4 py-4">
             <input
@@ -51,149 +173,57 @@ export default function ControlPanel({
               className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300"
             />
             <span className="text-sm leading-6 text-slate-600">
-              Show this inside a full email layout before previewing and sending.
+              Add a ready-made email frame around your HTML so it looks more like a real email in preview and test sends.
             </span>
           </label>
 
-          <button
-            type="button"
-            onClick={onSend}
-            disabled={!canSend || isSending}
-            className="micro-interactive mt-6 w-full rounded-full bg-slate-900 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSending ? "Sending test email..." : "Send test email now"}
-          </button>
-
-          {validationResult.counts.critical > 0 ? (
-            <p className="mt-3 text-sm leading-6 text-rose-700">
-              Resolve the critical HTML validation issues before sending a test email.
+          {validationResult.counts.critical > 0 || validationResult.counts.warning > 0 ? (
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Validation issues are shown in the editor for review only. Even critical findings like `&lt;div&gt;` usage will not block test sends.
             </p>
           ) : null}
         </section>
 
-        <section className="soft-enter border-t border-slate-200 pt-10">
-          <div className="flex items-center justify-between">
+        <section className="soft-enter border-t border-slate-200 pt-8 md:pt-10">
+          <button
+            type="button"
+            onClick={() => setTemplatesOpen((current) => !current)}
+            className="micro-interactive flex w-full items-center justify-between gap-3 text-left"
+          >
             <div>
-              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Step 2</p>
-              <h2 className="mt-2 text-[1.75rem] leading-tight text-slate-900">
-                <span className="font-display">Who should receive the test</span>
+              <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Quick start</p>
+              <h2 className="mt-2 text-[1.45rem] leading-tight text-slate-900 sm:text-[1.75rem]">
+                <span className="font-display">Use a ready-made draft</span>
               </h2>
             </div>
-          </div>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Add one or more email addresses. Click an address chip to remove it.
-          </p>
-
-          <textarea
-            value={recipientInput}
-            onChange={(event) => setRecipientInput(event.target.value)}
-            rows={2}
-            placeholder="name@example.com, another@example.com"
-            className="mt-6 w-full resize-none rounded-[18px] border border-slate-200 bg-white px-4 py-4 text-sm text-slate-700 outline-none transition focus:border-slate-300 focus:ring-2 focus:ring-slate-100"
-          />
-
-          <button
-            type="button"
-            onClick={addRecipients}
-            className="micro-interactive mt-5 rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Add people
+            <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-500">
+              {templatesOpen ? "Hide" : "Show"}
+            </span>
           </button>
 
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            {recipients.map((email) => (
-              <button
-                type="button"
-                key={email}
-                onClick={() => removeRecipient(email)}
-                className={`micro-interactive rounded-full px-3 py-1.5 text-sm ${
-                  validRecipients.includes(email) ? "bg-slate-100 text-slate-700" : "bg-amber-100 text-amber-800"
-                }`}
-              >
-                {email} ×
-              </button>
-            ))}
-          </div>
+          {templatesOpen ? (
+            <>
+              <p className="mt-3 text-sm leading-7 text-slate-600">Pick a template to fill the editor instantly.</p>
 
-          {invalidRecipients.length > 0 ? (
-            <p className="mt-5 text-sm leading-6 text-amber-800">
-              A few addresses need fixing before sending.
-            </p>
-          ) : null}
-        </section>
-
-        <section className="soft-enter border-t border-slate-200 pt-10">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Quick start</p>
-          <h2 className="mt-2 text-[1.75rem] leading-tight text-slate-900">
-            <span className="font-display">Use a ready-made draft</span>
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-slate-600">Pick a template to fill the editor instantly.</p>
-
-          <div className="mt-6 space-y-4">
-            {templates.map((template) => (
-              <button
-                type="button"
-                key={template.id}
-                onClick={() => applyTemplate(template)}
-                className="micro-interactive surface-card w-full rounded-[22px] border border-slate-200 bg-white px-4 py-[18px] text-left transition hover:border-slate-300 hover:bg-slate-50"
-              >
-                <p className="text-sm font-semibold text-slate-900">{template.name}</p>
-                <p className="mt-1.5 text-sm leading-6 text-slate-500">{template.description}</p>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="soft-enter border-t border-slate-200 pt-10">
-          <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Additional info</p>
-          <h2 className="mt-2 text-[1.75rem] leading-tight text-slate-900">
-            <span className="font-display">Connection and delivery status</span>
-          </h2>
-
-          <div className="mt-6 space-y-5">
-            <div className="surface-card rounded-[22px] bg-white px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-500">Server</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                {isCheckingHealth ? "Checking connection..." : serverInfo.reachable ? "Connected" : "Not available"}
-              </p>
-            </div>
-
-            <div className="surface-card rounded-[22px] bg-white px-4 py-4">
-              <p className="text-xs uppercase tracking-[0.12em] text-slate-500">From address</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                {serverInfo.configured
-                  ? `${serverInfo.fromName || "Email Studio"} <${serverInfo.fromEmail}>`
-                  : "Email sending is not configured yet."}
-              </p>
-            </div>
-
-            {status.message ? (
-              <div className={`rounded-[22px] px-4 py-4 text-sm leading-6 ${statusStyles[status.type] || statusStyles.idle}`}>
-                {status.message}
-              </div>
-            ) : null}
-
-            {sendResults.length > 0 ? (
-              <div className="space-y-2">
-                {sendResults.map((result) => (
-                  <div
-                    key={result.email}
-                    className={`rounded-[18px] px-4 py-3 text-sm ${
-                      result.success ? "bg-emerald-50 text-emerald-800" : "bg-rose-50 text-rose-800"
-                    }`}
+              <div className="mt-6 space-y-4">
+                {templates.map((template) => (
+                  <button
+                    type="button"
+                    key={template.id}
+                    onClick={() => applyTemplate(template)}
+                    className="micro-interactive surface-card w-full rounded-[22px] border border-slate-200 bg-white px-4 py-[18px] text-left transition hover:border-slate-300 hover:bg-slate-50"
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="truncate">{result.email}</span>
-                      <span>{result.success ? `Sent (${result.statusCode})` : "Not sent"}</span>
-                    </div>
-                    {!result.success && result.message ? (
-                      <p className="mt-1 text-xs leading-5 opacity-80">{result.message}</p>
-                    ) : null}
-                  </div>
+                    <p className="text-sm font-semibold text-slate-900">{template.name}</p>
+                    <p className="mt-1.5 text-sm leading-6 text-slate-500">{template.description}</p>
+                  </button>
                 ))}
               </div>
-            ) : null}
-          </div>
+            </>
+          ) : (
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              Expand to see templates.
+            </p>
+          )}
         </section>
       </div>
     </aside>

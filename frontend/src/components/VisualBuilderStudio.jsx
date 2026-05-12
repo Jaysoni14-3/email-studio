@@ -14,17 +14,17 @@ export default function VisualBuilderStudio({ onBack }) {
 
   return (
     <div className="builder-page min-h-screen text-slate-900">
-      <header className="border-b border-slate-200/90 bg-white/70 px-5 py-4 backdrop-blur md:px-8 md:py-5">
-        <div className="mx-auto flex w-full max-w-[1760px] items-center justify-between">
+      <header className="border-b border-slate-200/90 bg-white/70 px-4 py-4 backdrop-blur sm:px-5 md:px-8 md:py-5">
+        <div className="mx-auto flex w-full max-w-[1760px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
             onClick={onBack}
-            className="micro-interactive rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium"
+            className="micro-interactive w-full rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium sm:w-auto"
           >
             Back
           </button>
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs">
               <input type="checkbox" checked={wrap} onChange={(event) => setWrap(event.target.checked)} />
               Wrap for email shell
             </label>
@@ -32,7 +32,7 @@ export default function VisualBuilderStudio({ onBack }) {
               <button
                 type="button"
                 onClick={() => setPreviewWidth("desktop")}
-                className={`micro-interactive rounded-full px-3 py-1.5 text-xs font-semibold ${
+                className={`micro-interactive flex-1 rounded-full px-3 py-1.5 text-xs font-semibold sm:flex-none ${
                   previewWidth === "desktop" ? "bg-slate-900 text-white" : "text-slate-500"
                 }`}
               >
@@ -41,7 +41,7 @@ export default function VisualBuilderStudio({ onBack }) {
               <button
                 type="button"
                 onClick={() => setPreviewWidth("mobile")}
-                className={`micro-interactive rounded-full px-3 py-1.5 text-xs font-semibold ${
+                className={`micro-interactive flex-1 rounded-full px-3 py-1.5 text-xs font-semibold sm:flex-none ${
                   previewWidth === "mobile" ? "bg-slate-900 text-white" : "text-slate-500"
                 }`}
               >
@@ -52,7 +52,7 @@ export default function VisualBuilderStudio({ onBack }) {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-[1760px] gap-6 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)]">
+      <main className="mx-auto grid w-full max-w-[1760px] gap-5 p-4 sm:gap-6 sm:p-5 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)]">
         <section className="rounded-[24px] border border-slate-200 bg-[#fffdfa] p-4 md:p-6">
           <p className="mb-4 text-sm font-medium text-slate-600">Visual email builder (table-based, inline styles)</p>
           <VisualEmailBuilder blocks={blocks} setBlocks={setBlocks} />
@@ -61,8 +61,8 @@ export default function VisualBuilderStudio({ onBack }) {
         <section className="rounded-[24px] border border-slate-200 bg-white p-4 md:p-5">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Live preview</p>
           <div className="max-h-[80vh] overflow-y-auto rounded-[18px] border border-slate-200">
-            <div className={`mx-auto ${previewWidth === "mobile" ? "w-[390px] max-w-full" : "w-full"}`}>
-              <iframe title="visual-preview" srcDoc={previewDocument} className="h-[1000px] w-full border-0 bg-white" />
+            <div className={`mx-auto ${previewWidth === "mobile" ? "w-full max-w-[390px]" : "w-full"}`}>
+              <iframe title="visual-preview" srcDoc={previewDocument} className="h-[560px] w-full border-0 bg-white sm:h-[760px] md:h-[1000px]" />
             </div>
           </div>
           <label className="mt-4 block">

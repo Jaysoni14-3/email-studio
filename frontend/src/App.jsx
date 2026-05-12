@@ -7,7 +7,7 @@ export default function App() {
   const [view, setView] = useState("landing");
 
   if (view === "landing") {
-    return <Landing onStart={() => setView("builder")} onOpenVisualBuilder={() => setView("visual-builder")} />;
+    return <Landing onStart={() => setView("builder")} />;
   }
 
   if (view === "builder") {

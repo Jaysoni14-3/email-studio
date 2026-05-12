@@ -16,9 +16,9 @@ export default function WorkspaceCanvas({
   return (
     <section>
       <div className="flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 bg-[#fcfbf8] px-6 py-4 md:px-8 md:py-5">
+        <div className="flex flex-col gap-3 border-b border-slate-200 bg-[#fcfbf8] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 md:px-8 md:py-5">
           <span className="text-sm font-medium text-slate-500">Email content</span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={onFormat}
@@ -37,7 +37,7 @@ export default function WorkspaceCanvas({
         </div>
 
         <div className="flex flex-col">
-          <div className="h-[560px] min-h-[420px] border-b border-slate-200">
+          <div className="h-[52vh] min-h-[320px] border-b border-slate-200 sm:h-[560px] sm:min-h-[420px]">
             <Editor
               height="100%"
               defaultLanguage="html"
@@ -56,7 +56,7 @@ export default function WorkspaceCanvas({
             />
           </div>
 
-          <div className="border-b border-slate-200 bg-amber-50/40 px-6 py-5 md:px-8">
+          <div className="border-b border-slate-200 bg-amber-50/40 px-4 py-5 sm:px-6 md:px-8">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -120,15 +120,15 @@ export default function WorkspaceCanvas({
             </div>
           </div>
 
-          <div className="sticky top-4 z-10 bg-[#fffdfa] p-6 md:p-8">
+          <div className="bg-[#fffdfa] p-4 sm:p-6 md:sticky md:top-4 md:z-10 md:p-8">
             <div className="rounded-[20px] border border-slate-200/80 bg-[#fffdfa]/95 p-4 backdrop-blur-sm">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">Live preview</p>
-                <div className="flex rounded-full border border-slate-200 bg-white p-1">
+                <div className="flex w-full rounded-full border border-slate-200 bg-white p-1 sm:w-auto">
                   <button
                     type="button"
                     onClick={() => setPreviewWidth("desktop")}
-                    className={`micro-interactive rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    className={`micro-interactive flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition sm:flex-none ${
                       previewWidth === "desktop" ? "bg-slate-900 text-white" : "text-slate-500"
                     }`}
                   >
@@ -137,7 +137,7 @@ export default function WorkspaceCanvas({
                   <button
                     type="button"
                     onClick={() => setPreviewWidth("mobile")}
-                    className={`micro-interactive rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    className={`micro-interactive flex-1 rounded-full px-3 py-1.5 text-xs font-semibold transition sm:flex-none ${
                       previewWidth === "mobile" ? "bg-slate-900 text-white" : "text-slate-500"
                     }`}
                   >
@@ -149,13 +149,13 @@ export default function WorkspaceCanvas({
               <div className="max-h-[72vh] overflow-y-auto rounded-[18px] border border-slate-200 bg-white shadow-sm">
                 <div
                   className={`mx-auto transition-all duration-300 ${
-                    previewWidth === "mobile" ? "w-[390px] max-w-full" : "w-full"
+                    previewWidth === "mobile" ? "w-full max-w-[390px]" : "w-full"
                   }`}
                 >
                   <iframe
                     title="email-preview"
                     srcDoc={previewDocument}
-                    className="h-[900px] w-full border-0 bg-white"
+                    className="h-[560px] w-full border-0 bg-white sm:h-[720px] md:h-[900px]"
                   />
                 </div>
               </div>

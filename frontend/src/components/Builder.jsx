@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import WorkspaceCanvas from "./builder/WorkspaceCanvas";
 import ControlPanel from "./builder/ControlPanel";
+import StatusPanel from "./builder/StatusPanel";
 import {
   defaultState,
   extractEmails,
@@ -15,6 +16,7 @@ import { applyEmailIssueFix, validateEmailHtml } from "../utils/emailHtmlValidat
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const STORAGE_KEY = "email-studio-builder-state";
+const RECIPIENT_HISTORY_KEY = "email-studio-recipient-history";
 
 export default function Builder({ onBack }) {
   const [subject, setSubject] = useState(defaultState.subject);
@@ -23,6 +25,7 @@ export default function Builder({ onBack }) {
   const [wrap, setWrap] = useState(defaultState.wrap);
   const [recipientInput, setRecipientInput] = useState("");
   const [recipients, setRecipients] = useState(defaultState.recipients);
+  const [savedRecipients, setSavedRecipients] = useState([]);
   const [previewWidth, setPreviewWidth] = useState("desktop");
   const [status, setStatus] = useState({ type: "idle", message: "" });
   const [sendResults, setSendResults] = useState([]);
@@ -85,6 +88,18 @@ export default function Builder({ onBack }) {
             : defaultState.recipients
         );
       }
+
+      const savedRecipientHistory = JSON.parse(
+        window.localStorage.getItem(RECIPIENT_HISTORY_KEY) || "[]"
+      );
+
+      if (Array.isArray(savedRecipientHistory)) {
+        setSavedRecipients(
+          [...new Set(savedRecipientHistory.map((email) => String(email).trim().toLowerCase()))].filter(
+            isValidEmail
+          )
+        );
+      }
     } catch {
       setStatus({
         type: "warning",
@@ -111,6 +126,17 @@ export default function Builder({ onBack }) {
       });
     }
   }, [subject, html, recipients, wrap]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(RECIPIENT_HISTORY_KEY, JSON.stringify(savedRecipients));
+    } catch {
+      setStatus({
+        type: "warning",
+        message: "Saved recipient history could not be updated locally.",
+      });
+    }
+  }, [savedRecipients]);
 
   useEffect(() => {
     const loadServerHealth = async () => {
@@ -150,13 +176,6 @@ export default function Builder({ onBack }) {
     () => recipients.filter((email) => !isValidEmail(email)),
     [recipients]
   );
-  const canSend = Boolean(
-    serverInfo.reachable &&
-      subject.trim() &&
-      html.trim() &&
-      validRecipients.length > 0 &&
-      validationResult.counts.critical === 0
-  );
 
   const addRecipients = () => {
     const nextEmails = extractEmails(recipientInput);
@@ -166,12 +185,37 @@ export default function Builder({ onBack }) {
     }
 
     setRecipients((current) => [...new Set([...current, ...nextEmails])]);
+    setSavedRecipients((current) => [...new Set([...current, ...nextEmails.filter(isValidEmail)])]);
     setRecipientInput("");
     pushToast("success", `Added ${nextEmails.length} recipient${nextEmails.length > 1 ? "s" : ""}.`);
   };
 
+  const handleRecipientKeyDown = (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+    addRecipients();
+  };
+
   const removeRecipient = (emailToRemove) => {
     setRecipients((current) => current.filter((email) => email !== emailToRemove));
+  };
+
+  const restoreSavedRecipient = (emailToAdd) => {
+    if (!isValidEmail(emailToAdd)) {
+      pushToast("warning", "That saved email address is invalid and could not be added.");
+      return;
+    }
+
+    setRecipients((current) => [...new Set([...current, emailToAdd])]);
+    pushToast("success", `${emailToAdd} is ready to receive the next test email.`);
+  };
+
+  const removeSavedRecipient = (emailToRemove) => {
+    setSavedRecipients((current) => current.filter((email) => email !== emailToRemove));
+    pushToast("success", `Removed ${emailToRemove} from saved recipients.`);
   };
 
   const applyTemplate = (template) => {
@@ -203,11 +247,6 @@ export default function Builder({ onBack }) {
     const htmlToSend = (htmlRef.current || "").trim();
     if (!serverInfo.reachable || !subject.trim() || !htmlToSend || !validRecipients.length) {
       pushToast("warning", "Please fill subject, email content, and at least one valid recipient.");
-      return;
-    }
-
-    if (validationResult.counts.critical > 0) {
-      pushToast("error", "Fix the critical email HTML issues before sending a test email.");
       return;
     }
 
@@ -245,28 +284,28 @@ export default function Builder({ onBack }) {
 
   return (
     <div className="builder-page min-h-screen bg-[#f7f5ef] text-slate-900">
-      <header className="border-b border-slate-200/90 bg-white/70 px-5 py-4 backdrop-blur md:px-8 md:py-5">
-        <div className="mx-auto flex w-full max-w-[1680px] items-center justify-between">
+      <header className="border-b border-slate-200/90 bg-white/70 px-4 py-4 backdrop-blur sm:px-5 md:px-8 md:py-5">
+        <div className="mx-auto flex w-full max-w-[1680px] items-center justify-between gap-3">
           <button
             type="button"
             onClick={onBack}
-            className="micro-interactive rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium"
+            className="micro-interactive rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium sm:px-5"
           >
             Back
           </button>
           <button
             type="button"
             onClick={resetStudio}
-            className="micro-interactive rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium"
+            className="micro-interactive rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium sm:px-5"
           >
             Reset
           </button>
         </div>
       </header>
 
-      <main className="builder-layout mx-auto flex w-full max-w-[1760px] flex-col gap-8 p-5 md:flex-row md:gap-0 md:p-8">
+      <main className="builder-layout mx-auto flex w-full max-w-[1760px] flex-col gap-5 p-4 sm:gap-6 sm:p-5 md:flex-row md:gap-0 md:p-8">
         {/* LEFT — 70% */}
-        <div className="builder-workspace overflow-visible rounded-[32px] bg-white md:w-[70%] md:flex-none md:rounded-[32px_0_0_32px] md:border-r md:border-slate-200">
+        <div className="builder-workspace order-2 overflow-visible rounded-[28px] bg-white md:order-1 md:w-[70%] md:flex-none md:rounded-[32px_0_0_32px] md:border-r md:border-slate-200">
           <WorkspaceCanvas
             html={html}
             setHtml={updateHtml}
@@ -281,7 +320,7 @@ export default function Builder({ onBack }) {
         </div>
 
         {/* RIGHT — 30% */}
-        <div className="builder-panel md:w-[30%] md:flex-none">
+        <div className="builder-panel order-1 md:order-2 md:w-[30%] md:flex-none">
           <ControlPanel
             subject={subject}
             setSubject={setSubject}
@@ -289,26 +328,34 @@ export default function Builder({ onBack }) {
             setWrap={setWrap}
             recipientInput={recipientInput}
             setRecipientInput={setRecipientInput}
+            onRecipientKeyDown={handleRecipientKeyDown}
             recipients={recipients}
+            savedRecipients={savedRecipients}
             addRecipients={addRecipients}
             removeRecipient={removeRecipient}
+            restoreSavedRecipient={restoreSavedRecipient}
+            removeSavedRecipient={removeSavedRecipient}
             validRecipients={validRecipients}
             invalidRecipients={invalidRecipients}
             templates={templates}
             applyTemplate={applyTemplate}
-            status={status}
-            sendResults={sendResults}
-            serverInfo={serverInfo}
-            isCheckingHealth={isCheckingHealth}
             onSend={sendTestEmails}
             isSending={isSending}
-            canSend={canSend}
             validationResult={validationResult}
           />
         </div>
       </main>
 
-      <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-full max-w-sm flex-col gap-2">
+      <div className="mx-auto w-full max-w-[1760px] px-4 pb-4 sm:px-5 sm:pb-5 md:px-8 md:pb-8">
+        <StatusPanel
+          status={status}
+          sendResults={sendResults}
+          serverInfo={serverInfo}
+          isCheckingHealth={isCheckingHealth}
+        />
+      </div>
+
+      <div className="pointer-events-none fixed inset-x-4 top-4 z-50 flex w-auto max-w-sm flex-col gap-2 sm:left-auto sm:right-4 sm:w-full">
         {toasts.map((toast) => (
           <div
             key={toast.id}
